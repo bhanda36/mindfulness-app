@@ -8,21 +8,29 @@ export function renderHomePage() {
 
     <ul>
       <li><a href="https://your-pre-intervention-link.com" target="_blank">📋 Pre-Intervention Survey</a></li>
-      <li><a href="?day=1">🧘‍♀️ Start the 14-Day Mindfulness Journey</a></li>
       <li><a href="https://your-post-intervention-link.com" target="_blank">📝 Post-Intervention Survey</a></li>
       <li><a href="https://your-followup-link.com" target="_blank">🔄 Follow-Up Survey (2 Weeks Later)</a></li>
     </ul>
 
-    <h2>Your Progress</h2>
-    <ul id="progress-list"></ul>
+    <h2>Your 14-Day Progress</h2>
+    <div id="calendar" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 1rem;"></div>
   `;
 
-  const progressList = container.querySelector("#progress-list");
+  const calendar = container.querySelector("#calendar");
+
   for (let i = 1; i <= 14; i++) {
     const status = JSON.parse(localStorage.getItem(`day${i}`)) || {};
-    const item = document.createElement("li");
-    item.textContent = `Day ${i}: ${status.survey ? "✅ Completed" : "❌ Not done"}`;
-    progressList.appendChild(item);
+    const button = document.createElement("a");
+    button.href = `?day=${i}`;
+    button.textContent = `Day ${i} ${status.survey ? "✅" : ""}`;
+    button.style.padding = "10px";
+    button.style.background = status.survey ? "#cce5ff" : "#eee";
+    button.style.border = "1px solid #ccc";
+    button.style.textAlign = "center";
+    button.style.textDecoration = "none";
+    button.style.color = "#333";
+    button.style.borderRadius = "5px";
+    calendar.appendChild(button);
   }
 
   return container;
