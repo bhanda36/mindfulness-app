@@ -2,6 +2,13 @@ export function renderHomePage() {
   const container = document.createElement("div");
   container.className = "home-container";
 
+  const totalCompleted = Array.from({ length: 14 }, (_, i) => {
+    const status = JSON.parse(localStorage.getItem(`day${i + 1}`)) || {};
+    return status.survey ? 1 : 0;
+  }).reduce((a, b) => a + b, 0);
+
+  const progressPercent = Math.round((totalCompleted / 14) * 100);
+
   container.innerHTML = `
     <h1>Welcome, Parents & Caregivers!</h1>
     <p>Thank you for joining this two-week mindfulness intervention study. You will have a guided mindfulness audio each day for 14 days. Please start by completing the Pre-Intervention Survey.</p>
@@ -13,23 +20,38 @@ export function renderHomePage() {
     </ul>
 
     <h2>Your 14-Day Progress</h2>
+    <div style="margin-bottom: 1rem;">
+      <div style="background: #eee; height: 20px; border-radius: 10px; overflow: hidden;">
+        <div style="width: ${progressPercent}%; background: #4caf50; height: 100%; text-align: center; color: white; font-size: 0.8rem;">${progressPercent}%</div>
+      </div>
+    </div>
+
     <div id="calendar" style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 1rem;"></div>
   `;
 
   const calendar = container.querySelector("#calendar");
+  let lastCompletedDay = 0;
+
+  for (let i = 1; i <= 14; i++) {
+    const status = JSON.parse(localStorage.getItem(`day${i}`)) || {};
+    if (status.survey) lastCompletedDay = i;
+  }
 
   for (let i = 1; i <= 14; i++) {
     const status = JSON.parse(localStorage.getItem(`day${i}`)) || {};
     const button = document.createElement("a");
-    button.href = `?day=${i}`;
+    const isUnlocked = i === 1 || localStorage.getItem(`day${i - 1}`);
+
+    button.href = isUnlocked ? `?day=${i}` : "#";
     button.textContent = `Day ${i} ${status.survey ? "✅" : ""}`;
     button.style.padding = "10px";
-    button.style.background = status.survey ? "#cce5ff" : "#eee";
+    button.style.background = isUnlocked ? (status.survey ? "#cce5ff" : "#eee") : "#ddd";
     button.style.border = "1px solid #ccc";
     button.style.textAlign = "center";
-    button.style.textDecoration = "none";
+    button.style.textDecoration = isUnlocked ? "none" : "line-through";
     button.style.color = "#333";
     button.style.borderRadius = "5px";
+    button.style.pointerEvents = isUnlocked ? "auto" : "none";
     calendar.appendChild(button);
   }
 
