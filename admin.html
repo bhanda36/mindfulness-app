@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Admin Dashboard</title>
+    <style>
+      body {
+        font-family: sans-serif;
+        max-width: 700px;
+        margin: 2rem auto;
+        padding: 1rem;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th, td {
+        padding: 8px;
+        border: 1px solid #ccc;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>📊 Admin Dashboard (Local View Only)</h1>
+    <p>This shows what this participant has completed. It only reflects data stored on their browser.</p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Day</th>
+          <th>Completed?</th>
+        </tr>
+      </thead>
+      <tbody id="data"></tbody>
+    </table>
+
+    <script>
+      const tbody = document.getElementById("data");
+      for (let i = 1; i <= 14; i++) {
+        const status = JSON.parse(localStorage.getItem("day" + i)) || {};
+        const row = document.createElement("tr");
+        row.innerHTML = \`
+          <td>Day \${i}</td>
+          <td>\${status.survey ? "✅ Yes" : "❌ No"}</td>
+        \`;
+        tbody.appendChild(row);
+      }
+    </script>
+  </body>
+</html>
