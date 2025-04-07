@@ -1,33 +1,59 @@
-export default function MindfulnessApp() {
+export function renderHomePage() {
+  const container = document.createElement("div");
+  container.className = "home-container";
+
+  container.innerHTML = `
+    <h1>Welcome, Parents & Caregivers!</h1>
+    <p>Thank you for joining this two-week mindfulness intervention study. You will have a guided mindfulness audio each day for 14 days. Please start by completing the Pre-Intervention Survey.</p>
+
+    <ul>
+      <li><a href="https://your-pre-intervention-link.com" target="_blank">📋 Pre-Intervention Survey</a></li>
+      <li><a href="?day=1">🧘‍♀️ Start the 14-Day Mindfulness Journey</a></li>
+      <li><a href="https://your-post-intervention-link.com" target="_blank">📝 Post-Intervention Survey</a></li>
+      <li><a href="https://your-followup-link.com" target="_blank">🔄 Follow-Up Survey (2 Weeks Later)</a></li>
+    </ul>
+
+    <h2>Your Progress</h2>
+    <ul id="progress-list"></ul>
+  `;
+
+  const progressList = container.querySelector("#progress-list");
+  for (let i = 1; i <= 14; i++) {
+    const status = JSON.parse(localStorage.getItem(`day${i}`)) || {};
+    const item = document.createElement("li");
+    item.textContent = `Day ${i}: ${status.survey ? "✅ Completed" : "❌ Not done"}`;
+    progressList.appendChild(item);
+  }
+
+  return container;
+}
+
+export function renderDayPage(day) {
   const container = document.createElement("div");
   container.style.maxWidth = "600px";
   container.style.margin = "2rem auto";
   container.style.padding = "1rem";
   container.style.fontFamily = "sans-serif";
 
+  const moduleType = day <= 7 ? "Body Scan Meditation" : "Mindful Breathing";
+  const audioFile = day <= 7 ? `audio/body_scan_day${day}.mp3` : `audio/breathing_day${day}.mp3`;
+
   const title = document.createElement("h1");
-  title.textContent = "Day 1: Body Scan Meditation";
+  title.textContent = `Day ${day}: ${moduleType}`;
   title.style.fontSize = "1.5rem";
   container.appendChild(title);
 
   const audio = document.createElement("audio");
   audio.controls = true;
-  audio.src = "audio/body_scan_day1.mp3"; // Add your file to /public/audio/
+  audio.src = audioFile;
   container.appendChild(audio);
 
   const instructions = document.createElement("p");
-  instructions.textContent = "Please listen to the 10-minute guided meditation.";
+  instructions.textContent = "Please listen to the 10-minute guided audio.";
   container.appendChild(instructions);
 
-  const textarea = document.createElement("textarea");
-  textarea.placeholder = "Write your journal entry here...";
-  textarea.style.width = "100%";
-  textarea.style.marginTop = "1rem";
-  textarea.style.height = "100px";
-  container.appendChild(textarea);
-
   const surveyLink = document.createElement("a");
-  surveyLink.href = "https://your.qualtrics.survey.link"; // Replace with your link
+  surveyLink.href = "https://your.qualtrics.daily-survey.link";
   surveyLink.target = "_blank";
   surveyLink.textContent = "Submit Daily Survey";
   surveyLink.style.display = "inline-block";
@@ -36,7 +62,21 @@ export default function MindfulnessApp() {
   surveyLink.style.background = "blue";
   surveyLink.style.padding = "0.5rem 1rem";
   surveyLink.style.borderRadius = "5px";
+
+  surveyLink.onclick = () => {
+    const data = { survey: true };
+    localStorage.setItem(`day${day}`, JSON.stringify(data));
+    alert("🎉 Congratulations on completing today’s mindfulness session and survey!");
+  };
+
   container.appendChild(surveyLink);
+
+  const backLink = document.createElement("a");
+  backLink.href = "./";
+  backLink.textContent = "← Back to Home";
+  backLink.style.display = "block";
+  backLink.style.marginTop = "2rem";
+  container.appendChild(backLink);
 
   return container;
 }
