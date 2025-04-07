@@ -1,4 +1,12 @@
-import MindfulnessApp from "./MindfulnessApp.js";
+import { renderHomePage, renderDayPage } from "./MindfulnessApp.js";
 
-// Add the app to the page
-document.getElementById("root").appendChild(MindfulnessApp());
+const urlParams = new URLSearchParams(window.location.search);
+const day = urlParams.get("day");
+
+const app = document.getElementById("root");
+
+if (!day) {
+  app.appendChild(renderHomePage());
+} else {
+  app.appendChild(renderDayPage(parseInt(day)));
+}
